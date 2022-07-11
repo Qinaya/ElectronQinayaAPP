@@ -1,55 +1,113 @@
 <template>
-        <div class="form">
-            <div class="card-form">
-                <div class="logo">
-                    <img alt="Vue logo" class="logo" src="../../public/76071610766530234.png"  />
+        <!-- <div class="navBar"> -->
+            <div id="background">
+                <div class="card-form" v-if="!forgotPassword">
+                    <div class="cardContent" v-if="!register">
+                        <div class="logo">
+                            <img alt="Vue logo" class="logo" src="../../public/76071610766530234.png"  />
+                        </div>
+                        <br>
+                        <br>
+                        <br>
+                        <br>
+                        <!-- <div class="title" v-if="register">Nombre </div>
+                        <div class="content" v-if="register">
+                            <input class="textInput" type="text" v-model="name" placeholder="Nombre" />
+                        </div> -->
+                        <div class="title" style="font-weight: 800; font-size: xx-large; color: rgb(50, 50, 50);">Bienvenido</div>
+                        <div class="content">
+                            <input class="textInput" type="text" v-model="email" placeholder="Email" />
+                        </div>
+                        <div class="title" style="text-align:right; font-size: smaller; color: #CD1E50; cursor: pointer;" v-on:click="activeForgotPassword"><div>¿Olvidaste tu contraseña?</div></div>
+                        <div class="content">
+                            <input class="textInput" type="password" v-model="password" placeholder="Password" />
+                        </div>
+                        <div>
+            
+                            <div class="loader" v-if="loading"></div>
+                        </div>
+            
+                        <p v-if="errors.length">
+                            <b>Mensaje:</b>
+                            <ul style="margin: 0%;">
+                                <li v-for="error in errors" class="error">{{ error }}</li>
+                            </ul>
+                        </p>
+                        <div class="buttonContent" @click="login" v-if="button">
+                            <button class="button" type="submit"> Enviar </button>
+                        </div>
+                        <div class="buttonContent" @click="activeRegister" v-if="button">
+                            <button class="button1"> {{this.registerText}} </button>
+            
+                        </div>
+                        
+                    </div>
+    
+                    <div class="cardContent" v-if="register">
+                        <img alt="Vue logo"  style="width: 50px; position: absolute; left: 20px; top: 15px; cursor: pointer;" src="../../public/back.png"  @click="activeRegister"/>
+                        <br>
+                        <br>
+                        <div class="logo">
+                            <img alt="Vue logo" class="logo" src="../../public/76071610766530234.png"  />
+                        </div>
+                        <br>
+                        <br>
+                        <!-- <div class="title" v-if="register">Nombre </div>
+                        <div class="content" v-if="register">
+                            <input class="textInput" type="text" v-model="name" placeholder="Nombre" />
+                        </div> -->
+                        <div class="title" style="font-weight: 800; font-size: xx-large; color: rgb(50, 50, 50); text-align: center;">Crea tu Cuenta</div>
+                        <br>
+                        <div class="content">
+                            <input class="textInput" type="text" v-model="name" placeholder="Nombre" />
+                        </div>
+                        <div class="content">
+                            <input class="textInput" type="text" v-model="email" placeholder="Email" />
+                        </div>
+                        <div class="content">
+                            <input class="textInput" type="password" v-model="password" placeholder="Password" />
+                        </div>
+                        <div>
+            
+                            <div class="loader" v-if="loading"></div>
+                        </div>
+            
+                        <p v-if="errors.length">
+                            <b>Mensaje:</b>
+                            <ul style="margin: 0%;">
+                                <li v-for="error in errors" class="error">{{ error }}</li>
+                            </ul>
+                        </p>
+                        <div class="buttonContent" @click="login" v-if="button">
+                            <button class="button" type="submit"> Registrarse </button>
+                        </div>
+                        
+                    </div>
                 </div>
-                <br>
-                <div class="title" v-if="register">Nombre </div>
-                <div class="content" v-if="register">
-                    <input class="textInput" type="text" v-model="name" placeholder="Nombre" />
-                </div>
-                <div class="title">Email</div>
-                <div class="content">
-                    <input class="textInput" type="text" v-model="email" placeholder="Email" />
-                </div>
-                <div class="title">Password</div>
-                <div class="content">
-                    <input class="textInput" type="password" v-model="password" placeholder="Password" />
-                </div>
-                <br>
-                <div>
 
-                    <div class="loader" v-if="loading"></div>
-                </div>
+                <ForgotPassword v-if="forgotPassword" @forgotPassoword="activeForgotPassword"></ForgotPassword>
 
-                <p v-if="errors.length">
-                    <b>Mensaje:</b>
-                    <ul style="margin: 0%;">
-                        <li v-for="error in errors" class="error">{{ error }}</li>
-                    </ul>
-                </p>
-                <div class="buttonCon" @click="login" v-if="button">
-                    <button class="button" type="submit"> Enviar </button>
-                </div>
-                <div class="buttonContent" @click="activeRegister" v-if="button">
-                    <button class="button" style="background-color: #FCB813"> {{this.registerText}} </button>
-
-                </div>
             </div>
 
+        <!-- </div> -->
 
-        </div>
+
 </template>
 
 <script>
+
+
 import axios from "axios";
 import { useAuthStore } from '../stores/auth'
 const authStore = useAuthStore()
+import ForgotPassword from '@/components/ForgotPassword.vue'
 
-const REST_ENDPOINT = 'https://panel.qinaya.co/api/'
+
 export default {
     name: 'LoginView',
+    components: {
+        ForgotPassword
+    },
     data() {
         return {
             errors:[],
@@ -60,10 +118,19 @@ export default {
             loading: false,
             button: true,
             register: false,
+            REST_ENDPOINT: this.$REST_ENDPOINT,
+            forgotPassword: false,
 
         }
     },
     methods: {
+        activeForgotPassword() {
+            if (this.forgotPassword == false) {
+                this.forgotPassword = true
+            } else {
+                this.forgotPassword = false
+            }
+        },
         activeRegister() {
             if (this.register == false) {
                 this.registerText = 'Inicia sesion'
@@ -116,7 +183,7 @@ export default {
                 const params = new URLSearchParams();
                 params.append('email', this.email);
                 params.append('password', this.password);
-                axios.post(`${REST_ENDPOINT}mobile.asp?Action=authenticate`, params).then((result) => {
+                axios.post(`${this.REST_ENDPOINT}mobile.asp?Action=authenticate`, params).then((result) => {
                     if (result.data.status == "403") {
                         // localStorage.setItem("token", result.data.token);
                         this.displayError('El email o la contraseña son incorrectos');
@@ -171,7 +238,7 @@ export default {
                 params.append('email', this.email);
                 params.append('password', this.password);
 
-                axios.post(`${REST_ENDPOINT}mobile.asp?Action=register`, params).then((result) => {
+                axios.post(`${this.REST_ENDPOINT}mobile.asp?Action=register`, params).then((result) => {
                     if (result.data.status == "400") {
                         // localStorage.setItem("token", result.data.token);
                         this.displayError('Faltan datos por completar');
@@ -193,11 +260,29 @@ export default {
 </script>
 
 <style>
-body {
+#background {
     background-image: url('../../public/background.png');
-    background-repeat: no-repeat;
     background-size: cover;
+    background-attachment: fixed;
+    position:fixed;
+    padding: 20px;
+    top:0px;
+    right:0px;
+    bottom:0px;
+    left:0px;
+}
 
+
+.content {
+    margin: 15px auto;
+}
+.navBar {
+    padding: 5%;
+    margin: 5px;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
 }
 .form {
     width: 100%;
@@ -208,46 +293,54 @@ body {
     align-items: center;
 }
 .logo {
+    margin: 0 auto;
     display: flex;
     width: 15em;
     justify-content: center;
 }
 
-.card-form {
-    
+.cardContent {
+    width: auto;
+    padding: 20px 0px;
+    margin: 0 auto;
+}
+.card-form {  
     display: flex;
-    flex-direction: column;
+    flex-direction: column;position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
     justify-content: center;
-    /* background-image: url('../../public/background.png'); */
     align-items:center;
-    margin-top: 9%;    
-    width: 40%;
-    height: 30em;
+    background-color: white;
+    width: 50%;
+    height: auto;
     color: white;
     padding: 20px;
-    overflow: hidden;
+
     border-radius: 20px;
 }
-
-.content {
-    display: flex;
-    padding: 1%;
-    justify-content: center;
-    text-align: left;
-    font-size: large;
-    font-weight: 400;
-    width: 90%;
+@media screen and (max-width: 620px) {
+    .card-form {
+        width: auto;
+    }
 }
+
+
 .buttonContent {
     margin-top: 10px;
 }
+
 .title {
     text-align: left;
     font-size: 20px;
+    width: 280px;
+    color: black;
 
 }
 .error {
-    color: #ffffff;
+    color: #000000;
     font-weight: bold;
     font-size: 20px;
 }
@@ -259,7 +352,24 @@ body {
 
     text-align: center;
     text-decoration: none;
-    width: 12em;
+    width: 100%;
+    height: 50px;
+    display: inline-block;
+    font-size: 16px;
+    margin: 2px 2px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: box-shadow 600ms cubic-bezier(.33,.11,.02,.99), transform  600ms cubic-bezier(.33,.11,.02,.99);
+}
+.button1 {
+    background-color: #484444;
+    border: none;
+    color: white;
+    /* padding: 15px 60px; */
+
+    text-align: center;
+    text-decoration: none;
+    width: 100%;
     height: 3em;
     display: inline-block;
     font-size: 16px;
@@ -267,14 +377,20 @@ body {
     border-radius: 10px;
     cursor: pointer;
     transition: box-shadow 600ms cubic-bezier(.33,.11,.02,.99), transform  600ms cubic-bezier(.33,.11,.02,.99);
+}
+.button1:hover {
+    background-color: #FCB813;
+    color: white;
 
+    transform: scale(1)
+    translateY(-0.2rem);
 }
 .button:hover {
     background-color: #000000;
     color: white;
 
-    transform: scale(1.05)
-    translateY(-0.5rem);
+    transform: scale(1)
+    translateY(-0.2rem);
 }
 .button:active {
     background-color: #000000;
@@ -284,11 +400,11 @@ body {
 .textInput {
     height: 35px;
     width: 15em;
-
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 1%;
-    text-align: center;
+    background: rgb(248,244,244);
+    border: 0px solid #ccc;
+    border-radius: 10px;
+    padding: 5px 10px;
+    text-align: left;
     font-size: large;
     font-weight: 400;
 }
@@ -298,7 +414,7 @@ body {
     border: 5px solid #f3f3f3; /* Light grey */
     border-top: 5px solid #CD1E50; /* Blue */
     border-radius: 50%;
-    margin: 3%;
+    margin: 0 auto;
     width: 20px;
     height: 20px;
     animation: spin 2s linear infinite;
@@ -308,20 +424,4 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-@media screen and (max-width: 520px) {
-    .card-form {
-        width: 70%;
-    }
-    .logo {
-        width: 90%;
-    }
-}
-
-/* @media screen and (max-width: 770px) {
-    .textInput {
-        height: 40px;
-
-
-    }
-} */
 </style>

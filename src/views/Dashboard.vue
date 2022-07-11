@@ -1,118 +1,111 @@
 <template>
-    <navBar style="position: sticky; top: 0%; z-index: 2;"></navBar>
+    <navBar style="position: sticky; top: 0%; z-index: 2;" :ruta="{ruta}" v-if="!mirage"></navBar>
     
     <div class="centralCompuDispla" v-if="mirage">
         <div id="container">
-            <iframe :src="mirageUrl" :class="fullscreen ? 'compuDisplayFullScreen' : 'compuDisplay' "></iframe>
-        </div>
-        <br>
-        <div :class="fullscreen ? 'controlButtonFullScreen': 'controlButton' ">
-            <div class="buttonController">
-                <div style="display:flex"> 
-                    <!-- <svg-icon :fa-icon="faHouse" :size="25" flip="horizontal" ></svg-icon> -->
-                    <svg-icon :fa-icon="faMaximize" :size="25" flip="horizontal" class="buttonDisplay" v-on:click="afullscreen"></svg-icon>
-                    <svg-icon :fa-icon="faDoorOpen" :size="25" flip="horizontal" class="buttonDisplay" v-on:click="closeMirage"></svg-icon>
-                </div>
+            <iframe :src="mirageUrl" :class="fullscreen ? 'compuDisplayFullScreen' : 'compuDisplay'" allowfullscreen frameBorder="0"></iframe>
+            <div :class="fullscreen ? 'controlButtonFullScreen': 'controlButton' " id="controlIframe" allowfullscreen>
+                <div class="buttonController">
+                    <div style="display:flex"> 
+                        <!-- <svg-icon :fa-icon="faHouse" :size="25" flip="horizontal" ></svg-icon> -->
+                        <svg-icon :fa-icon="faMaximize" :size="25" flip="horizontal" class="buttonDisplay" v-on:click="EscFullScreen"></svg-icon>
+                        <svg-icon :fa-icon="faDoorOpen" :size="25" flip="horizontal" class="buttonDisplay" v-on:click="closeMirage"></svg-icon>
+                    </div>
 
+                </div>
             </div>
         </div>
+        <br>
     </div>
 
     <br>
         <div class="dashboardContainer" v-if="!mirage">
-            
             <div class="centralPanel noSelect">
-                <div class="titlePanel">
-                    <div class="backButton" v-on:click="backMachine"> 
-                        <div class="arrowIcon noSelect">
-                            &lt;
+                <div class="" style="margin: auto auto;">
+
+                    <div class="buttonGroup" v-if="!ended">
+                        <div class="secondButton">
+                            <span class="ended" v-on:click="activeEnded">Vencidos</span>
+                            <div class="backgroundButton"></div>
+                        </div>
+                        <div class="firstButton">
+                            <span>Activos</span>
                         </div>
                     </div>
-                    &nbsp;&nbsp;
-                    <h1 class="panelTitle"> Compu&nbsp;Panel</h1>
-                    &nbsp;&nbsp;
-                    <div class="nextButton" v-on:click="nextMachine">
-                        <div class="arrowIcon noSelect" >
-                            
-                            &gt;
+
+                    <div class="buttonGroup" v-if="ended">
+                        <div id="secondButton">
+                            <span id="ended" v-on:click="endEnded" >Activos</span>
+                            <div id="backgroundButton"></div>
+                        </div>
+                        <div id="firstButton">
+                            <span >Vencidos</span>
                         </div>
                     </div>
+
+
+
                 </div>
                 <br>
-                <h1 style="text-align:center; color: white;" v-if="machines.length == 0">No tienes Compus Asignado</h1>
-                <div class="panel" v-if="!machines.length == 0">
-                    <br>
-                    <h2 class="compuName" v-if="machines[position]">{{ machines[position].nombre_maquina }}</h2>
-                    
-                    <div class="infoPanel">
-
-                        <div class="panelInfo">
-                            <h3 class="titleCompu">
-                                Sistema&nbsp;operativo
-                            </h3>
-                            <div class="descriptionCompu" v-if="machines[position]">
-                                {{ machines[position].sistema_operativo }}
+                <h1 style="text-align:center; color: black; margin: 0px;" v-if="machines.length == 0">{{ endEnded  ? 'No tienes Compus Asignados' : 'No tienes Compus vencidos '}}</h1>
+                <div v-if="!ended">
+                    <div class="panel" v-for="(machine, index) in machines" style="margin-bottom: 20px;" :key="machine">
+                        <div class="divisionPanel">
+                            <div class="compuName">
+                                <div style="font-size: medium; font-weight: 500;">Nombre </div>
+                                <div style="font-size: smaller; color: gray;" >{{ machine.nombre_maquina }}</div>
                             </div>
+                            &nbsp;
+                            &nbsp;
+                            &nbsp;
+                            &nbsp;
+
+                            <div class="compuName">
+                                <div style="font-size: medium; font-weight: 500;">Tiempo Disponible </div>
+                                <div style="font-size: smaller; color: gray;">{{ machine.tiempo_disponible }}</div>
+                            </div>
+                            &nbsp;
+                            &nbsp;
+                            &nbsp;
+                            &nbsp;
+                            <div class="compuName">
+                                <div style="font-size: medium; font-weight: 500;">Sistema Operativo</div>
+                                <div style="font-size: smaller; color: gray;"> {{ machine.sistema_operativo }}</div>
+                            </div>
+                            &nbsp;
+                            &nbsp;
+                            &nbsp;
+                            &nbsp; 
                         </div>
     
-                        <div class="panelInfo">
-                            <h3 class="titleCompu">
-                                Plan
-                            </h3>
-                            <div class="descriptionCompu" v-if="machines[position]">
-                                {{ machines[position].plan }}
+    
+    
+                        <div class="divisionPanel1">
+    
+                            <!-- <div id="loader" ></div> -->
+                            <br>
+                            <div class="panelButton" v-on:click="loginMirage(index)" style="margin-right:2px">
+                                <a class="buttonConnect noSelect">
+                                    Conectar
+                                </a>
                             </div>
-                        </div>
-
-                        <div class="panelInfo">
-                            <h3 class="titleCompu">
-                                Tiempo&nbsp;Disponible
-                            </h3>
-                            <div class="descriptionCompu" v-if="machines[position]">
-                                {{ machines[position].tiempo_disponible }}
+                            <br>
+                            <div class="panelButton" v-on:click="loginMirage(index)" >
+                                <a class="buttonConnect noSelect" style="background-color:black">
+                                    Extender&nbsp;Tiempo
+                                </a>
                             </div>
+    
                         </div>
     
-                        <div class="panelInfo">
-                            <div class="descriptionCompu">
-                                <img alt="Vue logo" src="../../public/linux.png" class="osIcon" />
-                            </div>
-                        </div>
                     </div>
-                    <div id="loader" v-if="mirageActive"></div>
-                    <br>
-                    <div class="message" v-if="mirageActive">
-                        <div v-for="error in errors" id="textMessage">{{ error }}</div>
-                    </div>
-                    <div class="panelButton" v-on:click="loginMirage" v-if="!mirageActive">
-                        <a class="buttonConnect noSelect">
-                            Conectar
-                        </a>
-                    </div>
-                    <br>
-                </div>
-                <br>
-                <br>
-                <div class="trial" v-if="userTrial">
-                    <br>
-                    <h2 class="trialName">Tienes Acceso A Una Semana Gratis</h2>
-                    <br>
 
-                    <h4 class="trialName">Haz click en COMENZAR PRUEBA y da inicio a</h4>
-                    <h4 class="trialName">tu prueba gratis o compra un plan.</h4>
-                    <br>
-                    <div id="loader" v-if="loading"></div>
-                    <div class="message" v-if="!mirageActive">
-                        <div v-for="error in errors" id="textMessage">{{ error }}</div>
-                    </div>
-                    <br>
-                    <div class="panelButton" v-on:click="startTrial" v-if="!loading">
-                        <a class="buttonConnect noSelect">
-                            COMENZAR&nbsp;PRUEBA
-                        </a>
-                    </div>
-                    <br>
                 </div>
+                <br>
+                <br>
+                <trialCode v-if="!userTrial && !ended" :getMachines="getMachines"></trialCode>
+                <redeemCode v-if="!ended"></redeemCode>
+
             </div>
     
     
@@ -124,10 +117,16 @@
 <script>
 import { faHouse, faMaximize, faDoorOpen } from "@fortawesome/free-solid-svg-icons";
 
+// import { app, protocol, BrowserWindow, remote } from 'electron'
+
 import navBar from '@/components/NavBar.vue'
-const REST_ENDPOINT = 'https://panel.qinaya.co/api/'
 import { useAuthStore } from '../stores/auth'
 import axios from "axios";
+import redeemCode from '@/components/RedeemCode.vue'
+import trialCode from '@/components/TrialCode.vue'
+
+
+
 
 const authStore = useAuthStore()
 
@@ -136,43 +135,96 @@ export default {
         return {
             faHouse,
             faMaximize,
-            faDoorOpen
+            faDoorOpen,
         }
+    },
+    components: {
+        navBar,
+        redeemCode,
+        trialCode
+
     },
     data() {
         return {
             machines: [],
             errors:[],
+            errorsRedem:[],
+            loadingRedem: false,
             loading: false,
-            position: 0,
+            ruta: 'dashboard',
+            ended: false,
             mirageUrl: '',
             mirageActive: false,
+            buttonLoad: false,
+            position: null,
             mirage: false,
+            REST_ENDPOINT: this.$REST_ENDPOINT,
             fullscreen: false,
             userTrial: false,
+            a: false,
+            i: 1,
         }
     },
     methods: {
-        afullscreen() {
+        fullscreenChange() {
+            if (document.fullscreenEnabled ||
+                document.webkitIsFullScreen || 
+                document.mozFullScreen ||
+                document.msFullscreenElement) {
+                console.log('enter fullscreen');
+            }
+            else {
+                console.log('exit fullscreen');
+            }
+            // force to reload iframe once to prevent the iframe source didn't care about trying to resize the window
+            // comment this line and you will see
+            var iframe = document.querySelector('iframe');
+            iframe.src = iframe.src;
+        },
+        EscFullScreen() {
+            if (this.fullscreen == true && this.a == false) {
+                this.a = true;
+                this.fullscreen = false;
+                document.exitFullscreen();
 
+            } else {
+                this.a = false;
+                this.fullscreen = true;
+                this.afullscreen();
+            }
+        },
+        exitHandler() {
             console.log('aaaaa');
+            if (!document.fullscreenElement && !document.webkitIsFullScreen && !document.mozFullScreen && !document.msFullscreenElement) {
+                    this.fullscreen = false;
+            } else {
+                this.fullscreen = true;
+            }
+        },
+        afullscreen() {
             if (document.fullscreenEnabled || 
                 document.webkitFullscreenEnabled || 
                 document.mozFullScreenEnabled ||
                 document.msFullscreenEnabled) {
                 
                 // which element will be fullscreen
-                var iframe = document.querySelector('#container iframe');
+                var iframe = document.querySelector('#container');
+
+                var frame = document.querySelector('iframe');
                 // Do fullscreen
-                if (iframe.requestFullscreen) {
-                iframe.requestFullscreen();
-                } else if (iframe.webkitRequestFullscreen) {
-                iframe.webkitRequestFullscreen();
-                } else if (iframe.mozRequestFullScreen) {
-                iframe.mozRequestFullScreen();
-                } else if (iframe.msRequestFullscreen) {
-                iframe.msRequestFullscreen();
+                this.fullscreen = true;
+
+
+                if (iframe.requestFullscreen && this.fullscreen == true) {
+                    iframe.requestFullscreen();
+                } else if (iframe.webkitRequestFullscreen && this.fullscreen == true) {
+                    iframe.webkitRequestFullscreen();
+                } else if (iframe.mozRequestFullScreen && this.fullscreen == true) {
+                    iframe.mozRequestFullScreen();
+                } else if (iframe.msRequestFullscreen && this.fullscreen == true) {
+                    iframe.msRequestFullscreen();
                 }
+                setTimeout(() => {frame.focus()}, 1000);
             }
             else {
                 document.querySelector('.error').innerHTML = 'Your browser is not supported';
@@ -184,6 +236,7 @@ export default {
             this.mirageUrl = ''
             const params = new URLSearchParams();
             params.append('compu_id', this.machines[this.position].id);
+            this.position = null;
             axios.post(`${REST_ENDPOINT}mobile.asp?Action=end_session`, params).then((result) => {
                 // if (result.data.status == "403") {
                 //     authStore.$reset()
@@ -197,17 +250,20 @@ export default {
                     this.mirage = false
                     this.mirageActive = false
                     this.mirageUrl = ''
+                    this.a = false;
                     return;
                 }
             });
         },
-        loginMirage() {
+        loginMirage(id) {
+            this.position = id
             this.mirageActive = true;
             const params = new URLSearchParams();
             params.append('user_id', authStore.user.id);
-            params.append('compu_id', this.machines[this.position].id);
+            params.append('compu_id', this.machines[id].id);
             params.append('access_token', authStore.token);
-            axios.post(`${REST_ENDPOINT}mobile.asp?Action=start_session`, params).then((result) => {
+            axios.post(`${this.REST_ENDPOINT}mobile.asp?Action=start_session`, params).then((result) => {
+                console.log(result.data)
                 if (result.data.status == "403") {
                     authStore.$reset()
                     this.$router.push('/login')
@@ -217,11 +273,17 @@ export default {
                     return;
                 }
                 if (result.data.status == "200") {
-                    setTimeout(() => this.loading = false, 1000)
-                    this.mirageUrl = result.data.href;
-                    this.mirage = true;
-                    setTimeout(() => this.afullscreen(), 1000)
-                    return;
+                    setTimeout(() => this.mirageActive = false, 4000)
+                    this.mirage = true
+                    setTimeout(() => this.afullscreen(), 500);
+
+                    setTimeout(() => this.mirageUrl = result.data.href, 500);
+                
+                    document.addEventListener('fullscreenchange', this.exitHandler);
+                    document.addEventListener('webkitfullscreenchange', this.exitHandler);
+                    document.addEventListener('mozfullscreenchange', this.exitHandler);
+                    document.addEventListener('MSFullscreenChange', this.exitHandler);
+
                 }
             });
             return;
@@ -235,9 +297,11 @@ export default {
         },
         getMachines() {
             const params = new URLSearchParams();
+            this.userTrial = authStore.trial;
+
             params.append('user_id', authStore.user.id);
             params.append('access_token', authStore.token);
-            axios.post(`${REST_ENDPOINT}mobile.asp?Action=machines`, params).then((result) => {
+            axios.post(`${this.REST_ENDPOINT}mobile.asp?Action=machines`, params).then((result) => {
                 if (result.data.status == "403") {
                     authStore.$reset()
                     this.$router.push('/login')
@@ -251,7 +315,7 @@ export default {
                 if (result.data.status == "200") {
                     setTimeout(() => this.loading = false, 1000)
 
-                    // console.log(result.data.machines);
+                    console.log(result.data.machines);
                     result.data.machines.forEach(element => {
                         this.machines.push(element.user_machine);
                     });
@@ -260,66 +324,16 @@ export default {
                 }
             });
         },
-        backMachine() {
-            if (this.position > 0) {
-                this.position--
-            } else if (this.position == 0) {
-                this.position = this.machines.length - 1
-            }
+        activeEnded() {
+            this.ended = true
         },
-        nextMachine() {
-            console.log(authStore.trial == false, 'a');
-            if (this.position < this.machines.length - 1) {
-                this.position++
-            } else if (this.position == this.machines.length - 1) {
-                this.position = 0
-            }
+        endEnded() {
+            this.ended = false
         },
-
-        startTrial() {
-            this.loading = true
-            const params = new URLSearchParams();
-            params.append('user_id', authStore.user.id);
-            params.append('access_token', authStore.token);
-            axios.post(`${REST_ENDPOINT}mobile.asp?Action=trial`, params).then((result) => {
-                if (result.data.status == "403") {
-                    // localStorage.setItem("token", result.data.token);
-                    // this.displayError('El email o la contraseña son incorrectos');
-                    return;
-                }
-                if (result.data.status == "404") {
-                    // localStorage.setItem("token", result.data.token);
-                    // this.displayError('El email o la contraseña son incorrectos');
-                    return;
-                }
-                if (result.data.status == "401") {
-                    // localStorage.setItem("token", result.data.token);
-                    this.displayMessage('Ya reclamaste tu prueba gratis');
-                    return;
-                }
-                if (result.data.status == "200") {
-                    setTimeout(() => this.loading = false, 1000)
-                    authStore.trial = true;
-                    this.getMachines();
-                }
-            });
-        },
-        displayMessage(errors) {
-            setTimeout(() => this.loading = false, 1000)
-            setTimeout(() => this.errors.push(errors), 1000)
-
-            // this.errors.push(errors);
-            setTimeout(() => this.errors = [], 4000)
-            setTimeout(() => this.button = true, 4000)
-
-            return
-        },
-    },
-    components: {
-        navBar,
+        
     },
     beforeMount(){
-        this.userTrial = authStore.trial == false;
+        this.userTrial = authStore.trial;
         this.getMachines();
     },
 }
@@ -327,7 +341,148 @@ export default {
 
 <style>
 body {
-    margin: 0;            /* Reset default margin */
+    background-color: #fff;
+}
+.buttonConnect {
+        text-align: center;
+        color: #fff;
+        background-color: rgba(173,62,84,255);
+        margin: auto 0;
+        padding: 1rem;
+        width: 200px;
+        border-radius: 5px;
+        height: 20px;
+        cursor: pointer;
+        transition: box-shadow 600ms cubic-bezier(.33,.11,.02,.99), transform  600ms cubic-bezier(.33,.11,.02,.99);
+    }
+.buttonConnect:hover {
+    box-shadow: 0px 0px 9px #c6c6c6;
+    transform: scale(1)
+    translateY(-0.2rem);
+}
+.panel {
+        display: flex;
+        justify-content: space-between;
+        margin-right: 20px;
+        /* flex-direction: column; */
+        /* flex-wrap: wrap; */
+        padding: 20px;
+        box-shadow: 0px 1px 3px 0px #9e9c9c;
+        height: auto;
+        width: auto;
+
+        border-radius: 2px;
+        /* background-image: url('../../public/background.png'); */
+        margin: 0 auto;
+}
+.divisionPanel {
+    display: flex;
+    justify-content: space-between;
+    /* flex-direction: column; */
+    margin: 0 auto;
+    align-items: flex-end;
+    width: 80%;
+
+}
+.divisionPanel1 {
+    display: flex;
+    justify-content: center;
+    flex-wrap: nowrap;
+    /* flex-direction: column; */
+    margin: 0 auto;
+    align-items: center;
+    width: 80%;
+
+}
+
+@media screen and (max-width: 850px) {
+    .panel {
+        flex-direction: column;
+
+    }
+    .divisionPanel {
+        margin-bottom: 20px;
+
+    }
+}
+@media screen and (max-width: 520px) {
+    .divisionPanel {
+        flex-direction: column;
+    }
+    .divisionPanel1 {
+        flex-direction: column;
+    }
+}
+
+.ended:hover + .backgroundButton {
+    margin-left: -24px;
+}
+
+#ended:hover + #backgroundButton {
+    margin-left: -40px;
+}
+
+.firstButton {
+    float: left;
+    line-height: 20px;
+    color: #5D26D9;
+    font-weight: bold;
+}
+.secondButton {
+    float: right;
+    line-height: 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#firstButton {
+    float: right;
+    line-height: 20px;
+    color: #5D26D9;
+    font-weight: bold;
+}
+#secondButton {
+    float: left;
+    line-height: 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.buttonGroup {
+    width: 200px;
+    height: 20px;
+    padding: 10px 40px;
+    position: relative;
+    border-radius: 20px;
+    background-color: #e3e3e3;
+    z-index: 1;
+}
+
+.backgroundButton {
+    width: 130px;
+    height: 40px;
+
+    top: 0;
+    margin-left: -173px;
+    border-radius: 20px;
+    transition: 0.5s;
+    box-shadow: 0px 0px 9px #c6c6c6;
+    position: absolute;
+    background-color: #ffffff;
+    z-index: -1;
+}
+#backgroundButton {
+    width: 130px;
+    height: 40px;
+
+    top: 0;
+    margin-left: 109px;
+    border-radius: 20px;
+    transition: 0.5s;
+    box-shadow: 0px 0px 9px #c6c6c6;
+    position: absolute;
+    background-color: #ffffff;
+    z-index: -1;
 }
 
 #container {
@@ -341,6 +496,7 @@ body {
 .buttonDisplay {
     cursor: pointer;
 }
+    
 
 .buttonDisplay:hover {
     color: #CD1E50;
@@ -352,8 +508,20 @@ body {
 .controlButton {
     z-index: 1;
     padding: 5px;
-    width: 10%;
-    height: 10%;
+    background-color:  rgba(255,255,255,0);
+    width: 50px;
+    height: 50px;
+}
+.controlButton:fullscreen {
+    background-color: rgba(255,255,255,0.5);
+    width: 100px;
+    height: 100px;
+    position: absolute;
+}
+
+::backdrop
+{
+    background-color: transparent;
 }
 .centralCompuDispla {
     display: flex;
@@ -366,9 +534,9 @@ body {
 .compuDisplay {
     position: absolute;
     margin: 0 auto;
-    width: 90%;
+    width: 100%;
     /* border: #CD1E50 solid 4px; */
-    height: 90%;
+    height: 98%;
     padding: 5px;
     border-radius: 20px;
 }
@@ -411,6 +579,7 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+
 .noSelect {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
@@ -439,73 +608,15 @@ body {
     height: auto;
     display: flex;
     flex-wrap: wrap;
-    padding: 2%;
     flex-direction: column;
     justify-content: center;
 }
-
-.titlePanel {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 60%;
-    margin: 0 auto;
-
-
-}
-
-.arrowIcon {
-    color: rgb(255, 255, 255);
-    text-align: center;
-    font-size: 2rem;
-    line-height: 21px; /* adjust as needed */
-}
-
-.nextButton {
-    cursor: pointer;
-    transition: box-shadow 600ms cubic-bezier(.33,.11,.02,.99), transform  600ms cubic-bezier(.33,.2,.02,.20);
-    background-image: url('../../public/background.png');
-    /* background-size: cover; */
-
-    border-radius: 60px;
-    padding: 15px;
-    width: 20px;
-    height: 20px;
-
-}
-
-.nextButton:hover {
-    /* transform: scale(1.05) translateY(-0.5rem) rotate(180deg); */
-    transform: scale(1.05) translateY(-0.5rem);
-
-}
-
-
-.backButton {
-    cursor: pointer;
-    transition: box-shadow 600ms cubic-bezier(.33,.11,.02,.99), transform  600ms cubic-bezier(.33,.2,.02,.20);
-    background-image: url('../../public/background.png');
-    background-size: cover;
-    border-radius: 60px;
-    padding: 15px;
-    width: 20px;
-    height: 20px;
-
-}
-
-.backButton:hover {
-    transform: scale(1.05) translateY(-0.5rem);
-}
-.backButton:focus {
-    outline: none !important;
-}
-
 
 .panelTitle {
     background-image: url('../../public/background.png');
     background-size: cover;
     /* background-image: url('../../public/background.png'); */
-    color: white;
+    color: black;
     width: 500px;
     height: 50px;
     text-align: center;
@@ -517,153 +628,8 @@ body {
 }
 
 .compuName {
-    color: rgb(255, 255, 255);
+    color: black;
     margin: 0 auto;
 }
 
-.trialName {
-    color: rgb(255, 255, 255);
-    margin: 0 auto;
-}
-
-.panel {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    padding: 20px;
-    box-shadow: 0 1rem 2rem hsl(0 0% 0% / 20%);
-    overflow: auto;
-    width: 50%;
-    border-radius: 20px;
-    background-image: url('../../public/background.png');
-    margin: 0 auto;
-}
-
-.trial {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    box-shadow: 0 1rem 2rem hsl(0 0% 0% / 20%);
-    padding: 20px;
-
-    overflow: auto;
-    width: 50%;
-    height: auto;
-    border-radius: 20px;
-    background-color: aqua;
-    margin: 0 auto;
-    background-image: url('../../public/background.png')
-}
-.infoPanel {
-    width: 100%;
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-    padding-top: 20px;
-    /* padding-bottom: 20px; */
-    justify-items: center;
-    border-radius: 10px;
-
-
-}
-
-.panelInfo {
-    padding: 10px;
-    margin-bottom: 5px;
-    border-radius: 10px;
-
-    margin-top: 5px;
-    width: 46%;
-}
-
-.panelButton {
-    display: flex;
-    justify-content: center;
-
-}
-
-.buttonConnect {
-    text-align: center;
-    padding: 5px;
-    color: #fff;
-    background-color: rgb(147, 50, 50);
-    padding: 1rem 3rem;
-    border-radius: 10px;
-    box-shadow: 0 4px  4px  rgba(0, 0, 0, .1),
-    0 1px  6px  rgba(0, 0, 0, .05),
-    0 8px  8px  rgba(0, 0, 0, .1), 
-    0 16px 16px rgba(0, 0, 0, .1), 
-    8px 32px 32px rgba(0, 0, 0, .15), 
-    8px 64px 64px rgba(0, 0, 0, .15);
-
-    cursor: pointer;
-    transition: box-shadow 600ms cubic-bezier(.33,.11,.02,.99), transform  600ms cubic-bezier(.33,.11,.02,.99);
-}
-.buttonConnect:hover {
-    box-shadow: 0 4px  4px  rgba(0, 0, 0, .1),
-    0 1px  6px  rgba(0, 0, 0, .05),
-    0 8px  8px  rgba(0, 0, 0, .1), 
-    0 16px 16px rgba(0, 0, 0, .1), 
-    8px 32px 32px rgba(0, 0, 0, .15), 
-    8px 64px 64px rgba(0, 0, 0, .15); 
-
-    transform: scale(1.05)
-    translateY(-0.5rem);
-}
-.titleCompu {
-    text-align: center;
-    overflow: auto;
-    color: rgb(255, 255, 255);
-    margin: 0%;
-}
-.descriptionCompu {
-    text-align: center;
-    overflow: auto;
-    color: rgb(197, 197, 197);
-
-}
-
-.osIcon {
-    width: 80px;
-    height: 70px;
-}
-
-@media screen and (max-width: 520px) {
-    .infoPanel {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .panelInfo {
-        width: 80%;
-    }
-
-    .panel {
-        width: 90%;
-    }
-    .trial {
-        width: 90%;
-    }
-    .titlePanel {
-        width: 100%;
-        font-size: small;
-    }
-    .nextButton {
-        width: 15px;
-        height: 15px;
-    }
-    .backButton {
-        width: 15px;
-        height: 15px;
-    }
-    .arrowIcon {
-        font-size: 20px;
-        line-height: 12px; /* adjust as needed */
-    }
-}
-
-@media screen and (max-width: 850px) {
-    .panelInfo {
-        width: 80%;
-    }
-}
 </style>
